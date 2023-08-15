@@ -1,0 +1,19 @@
+{
+  "yaml.schemas": {
+    "file:/Users/mrkrchm/Library/Application Support/Code/User/globalStorage/amazonwebservices.aws-toolkit-vscode/sam.schema.json": [
+      "usecases/image-processing/template.yml"
+    ],
+    "file:///Users/mrkrchm/Library/Application%20Support/Code/User/globalStorage/amazonwebservices.aws-toolkit-vscode/sam.schema.json": [
+      "template.yml",
+      "webapp/sam/template.yaml",
+      "/Users/mrkrchm/Library/Caches/Transmit/0C0AE3B0-66B2-4ED0-A9E9-F7FD5C0E9533/marks-macbook-pro.local/private/tmp/sam-swagger/template.yaml",
+      "sam/template.yaml",
+      "template.yaml"
+    ],
+    "file:///Users/mrichman/Library/Application%20Support/Code/User/globalStorage/amazonwebservices.aws-toolkit-vscode/sam.schema.json": [
+      "template.yaml",
+      "sam/template.yaml"
+    ],
+    "https://raw.githubusercontent.com/aws/serverless-application-model/main/samtranslator/schema/schema.json": "file:///home/ec2-user/reinvent2023/backend/template.yaml"
+  }
+}

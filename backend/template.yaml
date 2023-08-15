@@ -1,0 +1,213 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: re:Invent 2023 Builders Session
+
+Parameters:
+  AuthName:
+    Type: String
+    Default: builders-session
+    Description: Unique Auth Name for Cognito Resources
+
+Globals:
+  Function:
+    Timeout: 5
+    MemorySize: 128
+    Runtime: python3.11
+    Tracing: Active
+  Api:
+    TracingEnabled: true
+    Cors:
+      AllowOrigin: '''*'''
+      AllowHeaders: '''Content-Type,Authorization,X-Amz-Date'''
+      AllowMethods: '''POST,GET,OPTIONS'''
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: hello_world
+      Description: Hello World function
+      Architectures:
+        - x86_64
+      Tracing: Active
+      Events:
+        HelloPath:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: GET
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: PowertoolsHelloWorld
+          POWERTOOLS_METRICS_NAMESPACE: Powertools
+          LOG_LEVEL: INFO
+      Tags:
+        LambdaPowertools: python
+
+  RegisterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: register
+      Description: Register function
+      Architectures:
+        - x86_64
+      Tracing: Active
+      Events:
+        RegisterPath:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: POST
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: PowertoolsRegister
+          POWERTOOLS_METRICS_NAMESPACE: Powertools
+          LOG_LEVEL: INFO
+      Tags:
+        LambdaPowertools: python
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name: !Sub 'ApplicationInsights-SAM-${AWS::StackName}'
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName: !Ref 'ApplicationResourceGroup'
+      AutoConfigurationEnabled: 'true'
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub '${AuthName}-userpool'
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      MfaConfiguration: 'OFF'
+      Schema:
+        - Name: given_name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: family_name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub '${AuthName}-client'
+      GenerateSecret: false
+      UserPoolId: !Ref 'UserPool'
+
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: !Sub '${AuthName}-identitypool'
+      AllowUnauthenticatedIdentities: true
+      CognitoIdentityProviders:
+        - ClientId: !Ref 'UserPoolClient'
+          ProviderName: !GetAtt 'UserPool.ProviderName'
+
+  CognitoUnAuthorizedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud: !Ref 'IdentityPool'
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: unauthenticated
+      Policies:
+        - PolicyName: CognitoUnauthorizedPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - mobileanalytics:PutEvents
+                  - cognito-sync:*
+                Resource: '*'
+
+  CognitoAuthorizedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action:
+              - sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud: !Ref 'IdentityPool'
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: authenticated
+      Policies:
+        - PolicyName: CognitoAuthorizedPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - mobileanalytics:PutEvents
+                  - cognito-sync:*
+                  - cognito-identity:*
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: '*'
+
+  IdentityPoolRoleMapping:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref 'IdentityPool'
+      Roles:
+        authenticated: !GetAtt 'CognitoAuthorizedRole.Arn'
+        unauthenticated: !GetAtt 'CognitoUnAuthorizedRole.Arn'
+
+  RegistrationTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: !Sub 'Registration-${AWS::StackName}'
+      
+Outputs:
+  RegisterApi:
+    Description: API Gateway endpoint URL for Prod environment for Register Function
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/register'
+  RegisterFunction:
+    Description: Register Lambda Function ARN
+    Value: !GetAtt 'RegisterFunction.Arn'
+  UserPoolId:
+    Value: !Ref 'UserPool'
+    Export:
+      Name: UserPool::Id
+  UserPoolClientId:
+    Value: !Ref 'UserPoolClient'
+    Export:
+      Name: UserPoolClient::Id
+  IdentityPoolId:
+    Value: !Ref 'IdentityPool'
+    Export:
+      Name: IdentityPool::Id
