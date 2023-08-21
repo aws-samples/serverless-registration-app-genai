@@ -4,18 +4,20 @@ from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.metrics import MetricUnit
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
+
+# cors_config = CORSConfig()
 app = APIGatewayRestResolver()
 tracer = Tracer()
 logger = Logger()
-metrics = Metrics(namespace="Powertools")
+metrics = Metrics(namespace="MyNamespace")
 
 
-@app.post("/register")
-def register():
+@app.post("/register", cors=True)
+def register() -> dict:
     metrics.add_metric(name="RegisterInvocations", unit=MetricUnit.Count, value=1)
     post_data: dict = app.current_event.json_body
-    logger.info("post_data: " + post_data)
-    return {"message": post_data["value"]}
+    logger.info(f"post_data => {post_data}")
+    return app.current_event.json_body
 
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)

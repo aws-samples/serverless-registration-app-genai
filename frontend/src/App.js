@@ -1,6 +1,13 @@
 import { Amplify } from "aws-amplify";
-import { Authenticator } from "@aws-amplify/ui-react";
-import React, { useCallback } from "react";
+import {
+  Authenticator,
+  Button,
+  Flex,
+  Grid,
+  TextAreaField,
+} from "@aws-amplify/ui-react";
+import React, { useCallback, useState } from "react";
+import postData from "./API";
 import "@aws-amplify/ui-react/styles.css";
 
 const amplify_config = {
@@ -18,32 +25,39 @@ const amplify_config = {
     passwordPolicyCharacters: [],
   },
   aws_cognito_verification_mechanisms: ["EMAIL"],
-  aws_cloud_logic_custom: [
-    {
-      name: "MyApiName",
-      endpoint: "https://lfjrwryc6h.execute-api.us-east-1.amazonaws.com/Prod",
-      region: "us-east-1",
-    },
-  ],
-  aws_mandatory_sign_in: 'enable' 
+  // aws_cloud_logic_custom: [
+  //   {
+  //     name: "MyApiName",
+  //     endpoint: "https://lfjrwryc6h.execute-api.us-east-1.amazonaws.com/Prod",
+  //     region: "us-east-1",
+  //   },
+  // ],
+  aws_mandatory_sign_in: "enable",
+  API: {
+    endpoints: [
+      {
+        name: "MyApiName",
+        endpoint: "https://9c8y48ivid.execute-api.us-east-1.amazonaws.com/Prod"  // <== Use the value from SAM output. Don't forget /Prod at the end (no trailing slash).
+      }
+    ]
+  }
 };
 
 Amplify.configure(amplify_config);
 
-async function getData() {
-  const response = await fetch("https://lfjrwryc6h.execute-api.us-east-1.amazonaws.com/Prod/hello");
-  if (!response.ok) {
-    const message = `An error has occured: ${response.status}`;
-    throw new Error(message);
-  }
-  const data = await response.json();
-  return data;
-}
-
 export default function App() {
-  const fetchData = useCallback(async () => {
+
+  const [message, setMessage] = useState('');
+
+  const handleMessageChange = event => {
+    setMessage(event.target.value);
+    console.log(event.target.value);
+  };
+
+  const fetchData = useCallback(async (email, message) => {
     try {
-      const response = await getData();
+      const response = postData(email, message);
+      console.log(response);
     } catch (err) {
       console.log(err);
     }
@@ -54,11 +68,31 @@ export default function App() {
       <Authenticator>
         {({ signOut, user }) => (
           <main>
-            <h1 class="text-body-emphasis">Hello {user.attributes.given_name}</h1>
-            Tell us a bit about your interests:
-            <label>Enter value : </label>
-            <input type="textarea" name="textValue" />
-            <button onClick={() => fetchData()}>Fetch Data</button>
+            <h1 className="text-body-emphasis">
+              Hello, {user.attributes.given_name}! {/* user.attributes.email */}
+            </h1>
+            <Grid
+              templateColumns="1fr"
+              templateRows="10rem 3rem" 
+            >
+              <TextAreaField columnSpan={2}
+                descriptiveText="Tell us about your interests, and we'll send you a custom welcome email!"
+                resize="vertical"
+                id="message"
+                name="message"
+                isRequired={true}
+                onChange={(event) => {
+                  setMessage(event.target.value);
+                }}
+                value={message}
+              />
+              <Flex>
+                <Button variation="primary" onClick={() => fetchData(user.attributes, message)} disabled={!message}>
+                  Submit
+                </Button>
+                <Button onClick={signOut}>Sign out</Button>
+              </Flex>
+            </Grid>
           </main>
         )}
       </Authenticator>

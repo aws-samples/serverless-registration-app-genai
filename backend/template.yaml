@@ -14,36 +14,16 @@ Globals:
     MemorySize: 128
     Runtime: python3.11
     Tracing: Active
+    Architectures:
+      - x86_64
   Api:
     TracingEnabled: true
     Cors:
-      AllowOrigin: '''*'''
-      AllowHeaders: '''Content-Type,Authorization,X-Amz-Date'''
-      AllowMethods: '''POST,GET,OPTIONS'''
+      AllowOrigin: "'*'"
+      AllowHeaders: "'*'"
+      AllowMethods: "'*'"
 
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: app.lambda_handler
-      CodeUri: hello_world
-      Description: Hello World function
-      Architectures:
-        - x86_64
-      Tracing: Active
-      Events:
-        HelloPath:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: GET
-      Environment:
-        Variables:
-          POWERTOOLS_SERVICE_NAME: PowertoolsHelloWorld
-          POWERTOOLS_METRICS_NAMESPACE: Powertools
-          LOG_LEVEL: INFO
-      Tags:
-        LambdaPowertools: python
 
   RegisterFunction:
     Type: AWS::Serverless::Function
@@ -51,9 +31,6 @@ Resources:
       Handler: app.lambda_handler
       CodeUri: register
       Description: Register function
-      Architectures:
-        - x86_64
-      Tracing: Active
       Events:
         RegisterPath:
           Type: Api
@@ -62,8 +39,8 @@ Resources:
             Method: POST
       Environment:
         Variables:
-          POWERTOOLS_SERVICE_NAME: PowertoolsRegister
-          POWERTOOLS_METRICS_NAMESPACE: Powertools
+          POWERTOOLS_SERVICE_NAME: MyService
+          POWERTOOLS_METRICS_NAMESPACE: MyNamespace
           LOG_LEVEL: INFO
       Tags:
         LambdaPowertools: python
@@ -193,21 +170,21 @@ Resources:
       TableName: !Sub 'Registration-${AWS::StackName}'
       
 Outputs:
+  # ApiEndpoint:
+  #   Description: aws_cloud_logic_custom
+  #   Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
   RegisterApi:
     Description: API Gateway endpoint URL for Prod environment for Register Function
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/register'
   RegisterFunction:
     Description: Register Lambda Function ARN
     Value: !GetAtt 'RegisterFunction.Arn'
-  UserPoolId:
+  userPoolId:
+    Description: userPoolId
     Value: !Ref 'UserPool'
-    Export:
-      Name: UserPool::Id
-  UserPoolClientId:
+  userPoolWebClientId:
+    Description: userPoolWebClientId
     Value: !Ref 'UserPoolClient'
-    Export:
-      Name: UserPoolClient::Id
-  IdentityPoolId:
+  identityPoolId:
+    Description: identityPoolId 
     Value: !Ref 'IdentityPool'
-    Export:
-      Name: IdentityPool::Id
