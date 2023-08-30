@@ -290,6 +290,9 @@ Outputs:
   IdentityPoolId:
     Description: Cognito Identity Pool ID 
     Value: !Ref 'IdentityPool'
+  Region:
+    Description: AWS Region
+    Value: !Sub '${AWS::Region}'
   RegisterFunction:
     Description: Lambda Function ARN
     Value: !GetAtt 'RegisterFunction.Arn'
