@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: re:Invent 2023 Builders Session
+Description: Serverless Registration App using GenAI
 
 Parameters:
   AuthName:
     Type: String
-    Default: builders-session
+    Default: registration-app
     Description: Unique Auth Name for Cognito Resources
 
 Globals:
@@ -19,17 +19,26 @@ Globals:
   Api:
     TracingEnabled: true
     Cors:
-      AllowOrigin: "'*'"
-      AllowHeaders: "'*'"
-      AllowMethods: "'*'"
+      AllowOrigin: "'OPTIONS, POST, GET'"
+      AllowHeaders: "'Content-Type'"
+      AllowMethods: "'*'" # DO NOT USE THIS VALUE IN PRODUCTION - https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html
 
 Resources:
+
+  BedrockLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: bedrock-layer
+      Description: Bedrock Lambda Layer
+      ContentUri: s3://mrkrchm-bedrock/bedrock-layer.zip
+      CompatibleRuntimes:
+        - python3.11
 
   RegisterFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app.lambda_handler
-      CodeUri: register
+      CodeUri: backend/src/handlers/register
       Description: Register function
       Events:
         RegisterPath:
@@ -39,11 +48,98 @@ Resources:
             Method: POST
       Environment:
         Variables:
-          POWERTOOLS_SERVICE_NAME: MyService
-          POWERTOOLS_METRICS_NAMESPACE: MyNamespace
+          POWERTOOLS_SERVICE_NAME: RegistrationService
+          POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
+          POWERTOOLS_DEV: true # set to false in production
           LOG_LEVEL: INFO
+          TOPIC_ARN: !Ref RegistrationTopic
+          TABLE_NAME: !Ref RegistrationTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RegistrationTable
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+        - !Ref BedrockLayer
       Tags:
         LambdaPowertools: python
+
+  WebSiteBucket:
+    Type: AWS::S3::Bucket
+
+  WebSiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebSiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Id: PolicyForCloudFrontPrivateContent
+        Statement:
+        - Sid: AllowCloudFrontServicePrincipal
+          Effect: Allow
+          Principal:
+            Service: cloudfront.amazonaws.com
+          Action: s3:GetObject
+          Resource: !Join ['', ['arn:aws:s3:::', !Ref WebSiteBucket, /*]]
+          Condition:
+            StringEquals:
+              AWS:SourceArn: !Join ['', ['arn:aws:cloudfront::', !Ref "AWS::AccountId",
+                  ':distribution/', !Ref CloudFrontDistribution]]
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub '${AWS::StackName}'
+        Origins:
+        - DomainName: !GetAtt WebSiteBucket.RegionalDomainName
+          Id: myS3Origin
+          OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+          S3OriginConfig:
+            OriginAccessIdentity: ''
+        Enabled: true
+        DefaultRootObject: index.html
+        HttpVersion: http2
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - DELETE
+          - GET
+          - HEAD
+          - OPTIONS
+          - PATCH
+          - POST
+          - PUT
+          CachedMethods:
+          - GET
+          - HEAD
+          TargetOriginId: myS3Origin
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
+          MinTTL: 0
+          DefaultTTL: 3600
+          MaxTTL: 86400
+        PriceClass: PriceClass_200
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: whitelist
+            Locations:
+            - US
+            - CA
+            - GB
+            - DE
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${WebSiteBucket} OAC"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -168,23 +264,41 @@ Resources:
     Type: AWS::Serverless::SimpleTable
     Properties:
       TableName: !Sub 'Registration-${AWS::StackName}'
+      PrimaryKey:
+        Name: email
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  RegistrationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub 'RegistrationTopic-${AWS::StackName}'
+
       
 Outputs:
-  # ApiEndpoint:
-  #   Description: aws_cloud_logic_custom
-  #   Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
-  RegisterApi:
+  APIGatewayEndpoint:
     Description: API Gateway endpoint URL for Prod environment for Register Function
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/register'
-  RegisterFunction:
-    Description: Register Lambda Function ARN
-    Value: !GetAtt 'RegisterFunction.Arn'
-  userPoolId:
-    Description: userPoolId
-    Value: !Ref 'UserPool'
-  userPoolWebClientId:
-    Description: userPoolWebClientId
-    Value: !Ref 'UserPoolClient'
-  identityPoolId:
-    Description: identityPoolId 
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+  CloudFrontDistributionId:
+    Description: CloudFront Distribution ID for hosting web front end
+    Value: !Ref CloudFrontDistribution
+  CloudFrontDistributionDomainName:
+    Description: CloudFront Distribution Domain Name for accessing web front end
+    Value: !GetAtt CloudFrontDistribution.DomainName
+  IdentityPoolId:
+    Description: Cognito Identity Pool ID 
     Value: !Ref 'IdentityPool'
+  RegisterFunction:
+    Description: Lambda Function ARN
+    Value: !GetAtt 'RegisterFunction.Arn'
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref 'UserPool'
+  UserPoolClientId:
+    Description: Cognito User Pool Client ID
+    Value: !Ref 'UserPoolClient'
+  WebS3BucketName:
+    Description: S3 Bucket for hosting web frontend
+    Value: !Ref WebSiteBucket
