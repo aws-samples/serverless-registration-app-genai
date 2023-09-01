@@ -1,9 +1,9 @@
 const amplify_config = {
-  userPoolId: "us-east-1_Z2BqcgXCW",                 // <== Use the value from SAM output.
-  userPoolWebClientId: "6lcn50fl2o4ivcnrt4okkb66gb", // <== Use the value from SAM output.
-  region: "us-east-1",                           // <== Use the region provided by the instructor.
-  identityPoolId: "us-east-1:42889af5-0827-4c68-9854-8022f0fbb342",         // <== Use the value from SAM output.
-  identityPoolRegion: "us-east-1",               // <== Use the region provided by the instructor.
+  userPoolId: "USER_POOL_ID",                 // <== Use the value from SAM output.
+  userPoolWebClientId: "USER_POOL_CLIENT_ID", // <== Use the value from SAM output.
+  region: "REGION",                           // <== Use the region provided by the instructor.
+  identityPoolId: "IDENTITY_POOL_ID",         // <== Use the value from SAM output.
+  identityPoolRegion: "REGION",               // <== Use the region provided by the instructor.
   aws_cognito_username_attributes: ["EMAIL"], // <== DO NOT EDIT
   aws_cognito_social_providers: [],           // <== DO NOT EDIT
   aws_cognito_signup_attributes: ["EMAIL", "FAMILY_NAME", "GIVEN_NAME"], // <== DO NOT EDIT
@@ -18,7 +18,7 @@ const amplify_config = {
     endpoints: [
       {
         name: "MyApiName",
-        endpoint: "https://d7v08wpvt8.execute-api.us-east-1.amazonaws.com/Prod"  // <== Use the value from SAM output. Don't forget /Prod at the end (no trailing slash).
+        endpoint: "ENDPOINT"  // <== Use the value from SAM output. Don't forget /Prod at the end (no trailing slash).
       }
     ]
   }

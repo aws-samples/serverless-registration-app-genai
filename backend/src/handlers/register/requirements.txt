@@ -1,2 +1,1 @@
-# aws-lambda-powertools[tracer]
 langchain

@@ -10,7 +10,7 @@ Parameters:
 
 Globals:
   Function:
-    Timeout: 5
+    Timeout: 30
     MemorySize: 128
     Runtime: python3.11
     Tracing: Active
@@ -19,18 +19,19 @@ Globals:
   Api:
     TracingEnabled: true
     Cors:
-      AllowOrigin: "'OPTIONS, POST, GET'"
-      AllowHeaders: "'Content-Type'"
-      AllowMethods: "'*'" # DO NOT USE THIS VALUE IN PRODUCTION - https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html
+      AllowMethods: "'OPTIONS, POST, GET'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+      AllowOrigin: "'*'" # DO NOT USE THIS VALUE IN PRODUCTION - https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html
 
 Resources:
 
+  # TODO Remove layer for Bedrock GA
   BedrockLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
       LayerName: bedrock-layer
       Description: Bedrock Lambda Layer
-      ContentUri: s3://mrkrchm-bedrock/bedrock-layer.zip
+      ContentUri: s3://mrkrchm-bedrock/boto3-for-bedrock-47597af9-9989-49b2-9576-7d452e1442cd.zip
       CompatibleRuntimes:
         - python3.11
 
@@ -50,16 +51,24 @@ Resources:
         Variables:
           POWERTOOLS_SERVICE_NAME: RegistrationService
           POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
-          POWERTOOLS_DEV: true # set to false in production
+          POWERTOOLS_DEV: false # set to false in production
           LOG_LEVEL: INFO
           TOPIC_ARN: !Ref RegistrationTopic
           TABLE_NAME: !Ref RegistrationTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref RegistrationTable
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt RegistrationTopic.TopicName
+        - Statement:
+          - Sid: BedrockInvokeModelPolicy
+            Effect: Allow
+            Action:
+            - bedrock:InvokeModel
+            Resource: !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-tg1-large
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
-        - !Ref BedrockLayer
+        - !Ref BedrockLayer # TODO Remove layer for Bedrock GA
       Tags:
         LambdaPowertools: python
 
@@ -79,11 +88,13 @@ Resources:
           Principal:
             Service: cloudfront.amazonaws.com
           Action: s3:GetObject
-          Resource: !Join ['', ['arn:aws:s3:::', !Ref WebSiteBucket, /*]]
+          # Resource: !Join ['', ['arn:aws:s3:::', !Ref WebSiteBucket, /*]]
+          Resource: !Sub 'arn:aws:s3:::${WebSiteBucket}/*' 
           Condition:
             StringEquals:
-              AWS:SourceArn: !Join ['', ['arn:aws:cloudfront::', !Ref "AWS::AccountId",
-                  ':distribution/', !Ref CloudFrontDistribution]]
+              # AWS:SourceArn: !Join ['', ['arn:aws:cloudfront::', !Ref "AWS::AccountId",
+              #     ':distribution/', !Ref CloudFrontDistribution]]
+              AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
 
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
@@ -116,7 +127,7 @@ Resources:
             QueryString: false
             Cookies:
               Forward: none
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https # allow-all
           MinTTL: 0
           DefaultTTL: 3600
           MaxTTL: 86400

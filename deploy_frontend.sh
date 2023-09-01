@@ -3,9 +3,8 @@
 set -e
 
 # Get user input for stack name
-# read -p "Enter the name of the CloudFormation stack: " stack_name
-
-stack_name="registration-app"
+# read -p "Enter your CloudFormation stack name (e.g. registration-app): " stack_name #TODO uncomment for prod
+stack_name="registration-app" #TODO remove for prod
 
 # Get outputs from CloudFormation stack
 api_gateway_endpoint=$(aws cloudformation describe-stacks --stack-name "$stack_name" --query "Stacks[0].Outputs[?OutputKey=='APIGatewayEndpoint'].OutputValue" --output text)
@@ -15,11 +14,6 @@ user_pool_id=$(aws cloudformation describe-stacks --stack-name "$stack_name" --q
 user_pool_client_id=$(aws cloudformation describe-stacks --stack-name "$stack_name" --query "Stacks[0].Outputs[?OutputKey=='UserPoolClientId'].OutputValue" --output text)
 region=$(aws cloudformation describe-stacks --stack-name "$stack_name" --query "Stacks[0].Outputs[?OutputKey=='Region'].OutputValue" --output text)
 identity_pool_id=$(aws cloudformation describe-stacks --stack-name "$stack_name" --query "Stacks[0].Outputs[?OutputKey=='IdentityPoolId'].OutputValue" --output text)
-
-if [ -z "$region" ]
-then
-  region="us-east-1"
-fi
 
 # Output the results
 echo "API Gateway URL: $api_gateway_endpoint"
@@ -56,4 +50,4 @@ aws cloudfront wait invalidation-completed --distribution-id $cloudfront_distrib
 # Get CloudFront domain name and validate
 cloudfront_domain_name=$(aws cloudfront list-distributions --query "DistributionList.Items[?Id=='$cloudfront_distribution_id'].DomainName" --output text)
 
-echo "The invalidation is now complete. Please visit your CloudFront URL to continue: https://$cloudfront_domain_name/"
+echo "CloudFront invalidation complete. Visit your CloudFront URL to continue: https://$cloudfront_domain_name/"

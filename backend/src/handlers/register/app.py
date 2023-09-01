@@ -6,40 +6,49 @@ from datetime import datetime
 import boto3
 from aws_lambda_powertools import Logger, Metrics, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.event_handler.exceptions import BadRequestError
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.metrics import MetricUnit
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from langchain.llms.bedrock import Bedrock
 
+
 app = APIGatewayRestResolver()
 tracer = Tracer()
 logger = Logger()
 metrics = Metrics(namespace="RegistrationApp")
-dynamodb_client = boto3.client("dynamodb")
-table_name = os.getenv("TABLE_NAME")
-sns_client = boto3.client("sns")
-topic_arn = os.getenv("TOPIC_ARN")
 bedrock_client = boto3.client("bedrock")
+dynamodb_client = boto3.client("dynamodb")
+sns_client = boto3.client("sns")
+table_name = os.getenv("TABLE_NAME")
+topic_arn = os.getenv("TOPIC_ARN")
 
 
-@logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
-@tracer.capture_lambda_handler
-@metrics.log_metrics(capture_cold_start_metric=True)
-def lambda_handler(event: dict, context: LambdaContext) -> dict:
-    """Lambda entry point"""
-    return app.resolve(event, context)
+@app.exception_handler(ValueError)
+def handle_malformed_request(ex: ValueError):
+    """Exception handler"""
+    metadata = {
+        "path": app.current_event.path,
+        "decoded_body": app.current_event.decoded_body,
+    }
+    logger.error(f"Malformed request: {ex}", extra=metadata)
+
+    raise BadRequestError("Malformed request")  # HTTP 400
 
 
 @app.post("/register", cors=True)
-def register() -> dict:
+@tracer.capture_method
+def register():
     """Handle POST /register action"""
     metrics.add_metric(name="RegisterInvocations", unit=MetricUnit.Count, value=1)
     post_data: dict = app.current_event.json_body
-    logger.info(f"post_data => {post_data}")
+    logger.debug(f"post_data => {post_data}")
 
-    email = post_data["email"]
-    first_name = post_data["first_name"]
-    profile = post_data["profile"]
+    # {'userAttributes': {'sub': '8448b4a8-0041-7022-555e-ca588f55b8d9', 'email_verified': True, 'given_name': 'Mark', 'family_name': 'Richman', 'email': 'mrkrchm@amazon.com'}, 'message': 'This is a test'}
+
+    email = post_data["userAttributes"]["email"]
+    first_name = post_data["userAttributes"]["given_name"]
+    profile = post_data["message"]
 
     tracer.put_annotation(key="email", value=email)
     save_profile_to_dynamodb(email, profile)
@@ -50,9 +59,8 @@ def register() -> dict:
 
     send_email(email_body)
 
-    # TODO error handling case, e.g. unverified email address
-
-    return app.current_event.json_body
+    # TODO error handling case, e.g. unverified email address (is this even implemented for SES?)
+    return "OK"
 
 
 @tracer.capture_method
@@ -85,11 +93,15 @@ def generate_email_body(first_name: str, profile_text: str) -> str:
         model_kwargs=titan_kwargs,
     )
 
-    response = bedrock_llm(
-        f"""Write an email from the AWS re:Invent team to the customer "{first_name}"
-        who registered for the Builder's Session SVS 209. Suggest to him some
-        other recommended sessions, based on his interests: {profile_text}."""
-    )
+    prompt = f"""Write an email from the AWS re:Invent team to the customer named
+        {first_name} who registered for the Builder's Session SVS 209. Suggest
+        to them some other recommended sessions, based on their interests:
+        {profile_text}."""
+
+    logger.info(f"Prompt: {prompt}")
+
+    metrics.add_metric(name="InvokeModel", unit=MetricUnit.Count, value=1)
+    response = bedrock_llm(prompt)
 
     logger.info(response)
     return response
@@ -115,7 +127,17 @@ def send_email(profile_text: str):
 
     sns_client.publish(
         TopicArn=topic_arn,
-        Subject="Your profile",
+        Subject="Welcome to AWS re:Invent Builder's Session SVS 209",
         Message=profile_text,
         MessageStructure="html",
     )
+
+
+@logger.inject_lambda_context(
+    correlation_id_path=correlation_paths.API_GATEWAY_REST, log_event=True
+)
+@tracer.capture_lambda_handler
+@metrics.log_metrics(capture_cold_start_metric=True)
+def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    """Lambda entry point"""
+    return app.resolve(event, context)
