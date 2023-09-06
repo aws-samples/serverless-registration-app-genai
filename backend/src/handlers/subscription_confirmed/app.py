@@ -59,7 +59,6 @@ def handle_malformed_request(ex: ValueError):
         "decoded_body": app.current_event.decoded_body,
     }
     logger.error(f"Malformed request: {ex}", extra=metadata)
-
     raise BadRequestError("Malformed request")  # HTTP 400
 
 
@@ -77,6 +76,8 @@ def subscription_confirmed() -> Dict:
     is_subscription_confirmed = False
     for subscription in subscriptions["Subscriptions"]:
         logger.info("Subscription ARN: " + subscription["SubscriptionArn"])
+        if subscription["SubscriptionArn"] == "PendingConfirmation":
+            return {"subscription_confirmed": False}
         subscription_attributes = get_subscription_attributes(
             subscription["SubscriptionArn"]
         )
