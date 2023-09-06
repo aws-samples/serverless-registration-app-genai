@@ -1,4 +1,7 @@
-""" Lambda function handler """
+"""
+Accepts registration information and sends it to an SQS queue for downstream
+processing by another Lambda function.
+"""
 
 import json
 import os

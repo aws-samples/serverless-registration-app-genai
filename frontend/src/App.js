@@ -30,10 +30,11 @@ export default function App() {
       setEmail(attributes.email);
     };
 
-    getUserAttribs().catch(console.error);
+    // getUserAttribs().catch(console.error);
 
     // Check subscription confirmation every 2 seconds
     const intervalId = setInterval(() => {
+      getUserAttribs().catch(console.error);
       subscriptionConfirmed(email)
         .then((response) => {
           console.log(response);

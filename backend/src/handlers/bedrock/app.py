@@ -1,4 +1,6 @@
-""" Lambda function handler """
+"""
+Invokes Bedrock to generate welcome email content and send the email via SNS.
+"""
 
 import os
 

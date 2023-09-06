@@ -135,6 +135,32 @@ Resources:
       Tags:
         LambdaPowertools: python
 
+  CognitoPostConfirmationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: backend/src/handlers/post_confirmation
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: RegistrationService
+          POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
+          POWERTOOLS_DEV: false # set to false in production
+          LOG_LEVEL: INFO
+          TOPIC_ARN: !Ref RegistrationTopic
+      Policies:
+        - SNSCrudPolicy:
+            TopicName: !GetAtt RegistrationTopic.TopicName
+      Events:
+        CognitoTrigger:
+          Type: Cognito
+          Properties:
+            Trigger: PostConfirmation
+            UserPool: !Ref UserPool
+      Layers:
+          - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+      Tags:
+        LambdaPowertools: python
+
   RegisterQueue:
     Type: AWS::SQS::Queue
     Properties:
