@@ -1,4 +1,3 @@
-import { Amplify } from "aws-amplify";
 import {
   Alert,
   Authenticator,
@@ -7,22 +6,31 @@ import {
   Grid,
   TextAreaField,
 } from "@aws-amplify/ui-react";
-import React, { useCallback, useState } from "react";
-import postData from "./API";
 import "@aws-amplify/ui-react/styles.css";
+import { Amplify } from "aws-amplify";
+import React, { useCallback, useState } from "react";
+import register from "./API";
 import amplify_config from "./amplify";
 
 Amplify.configure(amplify_config);
 
 export default function App() {
   const [message, setMessage] = useState("");
+  const [successHidden, setSuccessHidden] = useState(true);
+  const [errorHidden, setErrorHidden] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   const fetchData = useCallback(async (email, message) => {
     try {
-      const response = postData(email, message);
+      const response = await register(email, message);
       console.log(response);
+      setSuccessHidden(false);
     } catch (err) {
       console.log(err);
+      setSuccessHidden(true);
+      setErrorHidden(false);
+      setErrorMessage(`${err.message}. For details, use your browser's Developer Tools.`);
     }
   }, []);
 
@@ -34,13 +42,21 @@ export default function App() {
             <h1 className="text-body-emphasis">
               Hello, {user.attributes.given_name}!
             </h1>
-            <Alert hidden={true}
+            <Alert hidden={successHidden}
               variation="success"
               isDismissible={true}
               hasIcon={true}
-              heading="Alert heading"
+              heading="Success"
             >
-              This is the alert message
+              Your registration has been successfully submitted. Please check your inbox for a message from us.
+            </Alert>
+            <Alert hidden={errorHidden}
+              variation="error"
+              isDismissible={true}
+              hasIcon={true}
+              heading="Error"
+            >
+              {errorMessage}
             </Alert>
             <Grid templateColumns="1fr" templateRows="10rem 3rem">
               <TextAreaField

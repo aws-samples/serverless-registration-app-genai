@@ -53,8 +53,65 @@ Resources:
           POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
           POWERTOOLS_DEV: false # set to false in production
           LOG_LEVEL: INFO
-          TOPIC_ARN: !Ref RegistrationTopic
           TABLE_NAME: !Ref RegistrationTable
+          QUEUE_URL: !Ref RegisterQueue
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RegistrationTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt RegisterQueue.QueueName
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+      Tags:
+        LambdaPowertools: python
+
+  SubscriptionConfirmedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: backend/src/handlers/subscription_confirmed
+      Description: SNS subscription confirmed function
+      Events:
+        RegisterPath:
+          Type: Api
+          Properties:
+            Path: /subscription_confirmed
+            Method: GET
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: RegistrationService
+          POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
+          POWERTOOLS_DEV: false # set to false in production
+          LOG_LEVEL: INFO
+          TOPIC_ARN: !Ref RegistrationTopic
+      Policies:
+        - SNSCrudPolicy:
+            TopicName: !GetAtt RegistrationTopic.TopicName
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+      Tags:
+        LambdaPowertools: python
+
+  BedrockFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: backend/src/handlers/bedrock
+      Description: Bedrock function
+      Events:
+        RegisterSQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt RegisterQueue.Arn
+            BatchSize: 10
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: RegistrationService
+          POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
+          POWERTOOLS_DEV: false # set to false in production
+          LOG_LEVEL: INFO
+          TABLE_NAME: !Ref RegistrationTable
+          TOPIC_ARN: !Ref RegistrationTopic
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref RegistrationTable
@@ -71,6 +128,11 @@ Resources:
         - !Ref BedrockLayer # TODO Remove layer for Bedrock GA
       Tags:
         LambdaPowertools: python
+
+  RegisterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 180 # Fn timeout * 6
 
   WebSiteBucket:
     Type: AWS::S3::Bucket

@@ -14,3 +14,6 @@ deploy.frontend:
 
 teardown:
 	sam delete
+
+start:
+	(cd frontend && npm start)

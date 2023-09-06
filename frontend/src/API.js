@@ -1,6 +1,6 @@
 import { API } from "aws-amplify";
 
-async function postData(userAttributes, message) {
+function register(userAttributes, message) {
   const apiName = 'MyApiName';
   const path = '/register';
   const myInit = {
@@ -10,7 +10,7 @@ async function postData(userAttributes, message) {
     },
   };
 
-  return await API.post(apiName, path, myInit);
+  return API.post(apiName, path, myInit);
 }
 
-export default postData;
+export default register;
