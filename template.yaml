@@ -87,6 +87,12 @@ Resources:
       Policies:
         - SNSCrudPolicy:
             TopicName: !GetAtt RegistrationTopic.TopicName
+        - Statement:
+          - Sid: GetSubscriptionAttributesPolicy
+            Effect: Allow
+            Action:
+            - sns:GetSubscriptionAttributes
+            Resource: !Ref RegistrationTopic
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
       Tags:

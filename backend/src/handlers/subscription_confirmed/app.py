@@ -45,7 +45,8 @@ def get_subscription_attributes(subscription_arn: str) -> Dict:
     Gets all subscription attributes
     """
     response = sns_client.get_subscription_attributes(SubscriptionArn=subscription_arn)
-    return response.Attributes
+    logger.info("Subscription attributes: " + str(response))
+    return response["Attributes"]
 
 
 @app.exception_handler(ValueError)
@@ -72,13 +73,17 @@ def subscription_confirmed() -> Dict:
     email: Optional[str] = app.current_event.query_string_parameters.get("id")
     if email is None:
         raise BadRequestError("id parameter missing")
-    subscription_arns = sns_client.list_subscriptions_by_topic(topic_arn)
+    subscriptions = sns_client.list_subscriptions_by_topic(TopicArn=topic_arn)
     is_subscription_confirmed = False
-    for subscription_arn in subscription_arns:
-        subscription_attributes = get_subscription_attributes(subscription_arn)
+    for subscription in subscriptions["Subscriptions"]:
+        logger.info("Subscription ARN: " + subscription["SubscriptionArn"])
+        subscription_attributes = get_subscription_attributes(
+            subscription["SubscriptionArn"]
+        )
+        logger.info("Subscription attributes: " + str(subscription_attributes))
         if (
-            subscription_attributes["Attributes"]["Endpoint"] == email
-            and subscription_attributes["Attributes"]["PendingConfirmation"] == "false"
+            subscription_attributes["Endpoint"] == email
+            and subscription_attributes["PendingConfirmation"] == "false"
         ):
             is_subscription_confirmed = True
     return {"subscription_confirmed": is_subscription_confirmed}
