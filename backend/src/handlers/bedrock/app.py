@@ -32,6 +32,10 @@ topic_arn = os.getenv("TOPIC_ARN")
 @tracer.capture_method
 def generate_email_body(first_name: str, profile_text: str) -> str:
     """Generate email body"""
+
+    with open("session_data.txt", "r", encoding="utf-8") as file:
+        session_data = file.read()
+
     titan_kwargs = {
         "maxTokenCount": 4096,
         "stopSequences": [],
@@ -45,10 +49,11 @@ def generate_email_body(first_name: str, profile_text: str) -> str:
         model_kwargs=titan_kwargs,
     )
 
-    prompt = f"""Write an email from the AWS re:Invent team to the customer named
-        {first_name} who registered for the Builder's Session SVS 209. Suggest
-        to them some other recommended sessions, based on their interests:
-        {profile_text}."""
+    prompt = f"""Write a welcome email from the AWS re:Invent serverless team
+        to the customer named {first_name} who registered for the Builder's
+        Session SVS 209. Suggest to them three other recommended sessions, based
+        on their interests: {profile_text}. Use the data provided in the
+        following list as a source for recommended sessions: {session_data}."""
 
     logger.info(f"Prompt: {prompt}")
 

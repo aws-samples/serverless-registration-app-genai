@@ -1,0 +1,59 @@
+API302 | Building next-generation applications with event-driven architecture
+API401 | Advanced workflow patterns and  business processes
+API303 | Navigating the journey to serverless event-driven architecture
+API309 | Advanced integration patterns and trade-offs for loosely coupled apps
+API310 | Scale interactive data analysis with Step Functions Distributed Map
+API206 | Bringing workloads together with event-driven architecture
+API304 | Building better with Apache Kafka and Amazon EventBridge
+API307 | Comparing Amazon MWAA and AWS Step Functions
+API203 | Thinking asynchronously: Integration patterns for microservices
+API308 | Accelerating event-driven architecture with domain-driven design
+API305 | Building resilience in decoupled applications with dead-letter queues
+API306 | Combining Step Functions and EventBridge: Use cases and best practices
+API207 | Messaging at scale: How to decide which service to use
+API201 | Serverlesspresso: Building event-driven applications from the start
+API202 | The AWS Step Functions workshop
+API301 | Building event-driven architectures
+API205 | Decoupling your data-driven applications with Amazon EventBridge Pipes
+API204 | Build a serverless ordering system with toy bricks
+SVS401 | Best practices for serverless developers
+SVS301 | Building APIs: Choosing the best API solution & strategy for workloads
+SVS305 | Refactoring to serverless
+SVS307 | Scaling your serverless data processing with Amazon Kinesis and Kafka
+SVS308 | Building low-latency, event-driven applications
+SVS204 | Building Serverlesspresso: Creating event-driven architectures
+SVS309 | Improve productivity by shifting more responsibility to developers
+SVS205 | Getting started building serverless event-driven applications
+SVS203 | Thinking serverless
+SVS310 | Automated testing for serverless and event-driven architectures
+SVS313 | Harnessing observability to optimize your serverless workloads
+SVS402 | Refactoring Java applications to serverless
+SVS311 | Optimizing cost and performance for AWS Lambda-based workloads
+SVS312 | Building serverless applications with Terraform
+SVS314 | Is your serverless application production-ready?
+SVS317 | Building modern API architectures on AWS: Which front door to use
+SVS315 | Automating resilience with regional awareness for your applications
+SVS318 | Unlocking more efficient data processing with serverless
+SVS316 | Building generative AI applications with serverless and Amazon Bedrock
+SVS320 | Building multi-tenant applications with AWS Lambda and AWS Fargate
+SVS202 | Getting started with serverless patterns
+SVS201 | Building a serverless web application for a theme park
+SVS303 | Building secure serverless applications workshop
+SVS306 | Serverless observability workshop
+SVS302 | Building distributed data processing workloads with AWS Step Functions
+SVS304 | From serverful to serverless Java
+SVS209 | Using generative AI to build a serverless registration app
+SVS208 | Learn testing patterns for serverless, event-driven applications
+SVS207 | Creating your first API from scratch with OpenAPI and AWS SAM
+SVS321 | Designing your serverless API workloads for massive scale
+SVS319 | AWS Lambda performance tuning: Best practices and guidance
+SVS206 | Building your first serverless application with AWS SAM
+SVS210 | Just run code: Build serverless applications quickly with AWS SAM
+SVS322 | Demystifying idempotency with Powertools for AWS Lambda
+SVS323 | Solving problems with Amazon API Gateway
+SVS211 | Build a chatbot using Amazon Bedrock, Amazon Kendra and serverless
+API311 | Combine messaging services for resilience and ordering in high-scale workloads
+API312 | Prepare petabytes of data for your ML workloads with Step Functions
+API208 | Schedule work with EventBridge Scheduler
+SVS212 | Using AWS Lambda to process Amazon SQS and Amazon SNS messages
+SVS213 | Visualize and design your architecture with AWS Application Composer

@@ -18,7 +18,7 @@ const amplify_config = {
     endpoints: [
       {
         name: "MyApiName",
-        endpoint: "https://d7v08wpvt8.execute-api.us-east-1.amazonaws.com/Prod"  // <== Use the value from SAM output. Don't forget /Prod at the end (no trailing slash).
+        endpoint: "https://d7v08wpvt8.execute-api.us-east-1.amazonaws.com/Prod/"  // <== Use the value from SAM output. Don't forget /Prod at the end (no trailing slash).
       }
     ]
   }

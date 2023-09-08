@@ -407,3 +407,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/osx,sam,node,linux,python,windows,visualstudiocode
+
+# deploy_frontend.sh will create this file from amplify.js.orig
+frontend/src/amplify.js

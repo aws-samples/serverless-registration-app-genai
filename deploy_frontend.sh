@@ -25,6 +25,7 @@ echo "Identity Pool ID: $identity_pool_id"
 
 # Replace stack output values in amplify.js
 amplify_js="./frontend/src/amplify.js"
+cp $amplify_js.orig $amplify_js
 sed -i "s/USER_POOL_ID/$user_pool_id/g" $amplify_js
 sed -i "s/USER_POOL_CLIENT_ID/$user_pool_client_id/g" $amplify_js
 sed -i "s/IDENTITY_POOL_ID/$identity_pool_id/g" $amplify_js
