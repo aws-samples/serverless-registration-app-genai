@@ -31,18 +31,6 @@ const components = {
       </View>
     );
   },
-
-  Footer() {
-    const { tokens } = useTheme();
-
-    return (
-      <View textAlign="center" padding={tokens.space.small}>
-        <Text color={tokens.colors.neutral[80]} fontSize="0.75em">
-        &copy; 2023, Amazon Web Services, Inc. or its affiliates. All rights reserved.
-        </Text>
-      </View>
-    );
-  },
 }
 
 export {components, formFields};

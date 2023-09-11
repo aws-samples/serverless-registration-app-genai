@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import { Amplify, Auth, Hub } from "aws-amplify";
+import { Amplify, Auth } from "aws-amplify";
 import React, { useCallback, useEffect, useState } from "react";
 import { register, subscriptionConfirmed } from "./API";
 import amplify_config from "./amplify";
@@ -29,39 +29,13 @@ export default function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [emailConfirmed, setEmailConfirmed] = useState(false);
 
-  Hub.listen("auth", (data) => {
-    // console.log(JSON.stringify(data.payload.data.attributes.email));
-    switch (data.payload.event) {
-      case "signIn":
-        console.log("user signed in: " + data.payload.data.attributes.email);
-        setEmail(data.payload.data.attributes.email);
-        break;
-      case "signUp":
-        console.log("user signed up");
-        break;
-      case "signOut":
-        console.log("user signed out");
-        setEmail("");
-        break;
-      case "signIn_failure":
-        console.log("user sign in failed");
-        break;
-      case "configured":
-        console.log("the Auth module is configured");
-        break;
-      default:
-        console.log("unknown event");
-    }
-  });
-
-  // On componentDidMount set the timer
+  // On componentDidMount set the timer to invoke SNS topic subscription
+  // confirmation API every 2 seconds.
   useEffect(() => {
     // Check subscription confirmation every 2 seconds
     const intervalId = setInterval(() => {
+      console.info("Getting current authenticated user...");
       getUserAttribs();
-
-      if (email === "") return null;
-
       console.info(`Invoking /subscription_confirmed?id=${email}`);
       subscriptionConfirmed(email)
         .then((response) => {
@@ -72,6 +46,9 @@ export default function App() {
           }
         })
         .catch((error) => {
+          console.error(
+            `Invoking /subscription_confirmed?id=${email} threw an exception`
+          );
           console.error(error.response);
           setErrorMessage(error.response);
           setShowErrorAlert(true);
@@ -84,17 +61,28 @@ export default function App() {
   // Get current authenticated user
   const getUserAttribs = async () => {
     try {
-      const { attributes } = await Auth.currentAuthenticatedUser();
-      console.debug("user attribs:" + JSON.stringify(attributes));
-      setEmail(attributes.email);
+      const cognitoUser = await Auth.currentAuthenticatedUser();
+      console.debug("cognitoUser:" + JSON.stringify(cognitoUser));
+      setEmail(cognitoUser.attributes.email);
     } catch (error) {
+      console.error("Auth.currentAuthenticatedUser() threw an exception");
       console.error(error);
-      setErrorMessage(error);
-      setShowErrorAlert(true);
+      if (error !== "The user is not authenticated") {
+        setErrorMessage(error);
+        setShowErrorAlert(true);
+      }
     }
   };
 
-  // Handle submit
+  const signOutCurrentUser = async () => {
+    try {
+      await Auth.signOut();
+    } catch (error) {
+      console.log("error signing out: ", error);
+    }
+  };
+
+  // Handle submit button
   const fetchData = useCallback(async (email, message) => {
     try {
       if (email === "") return null;
@@ -119,6 +107,7 @@ export default function App() {
             <h1 className="text-body-emphasis">
               Hello, {user.attributes.given_name}!
             </h1>
+            {/* We can't send an email until SNS receives confirmation (opt-in) */}
             {emailConfirmed ? (
               <>
                 {showSuccessAlert && (
@@ -142,11 +131,14 @@ export default function App() {
                     {errorMessage}
                   </Alert>
                 )}
-                <Grid templateColumns="1fr" templateRows="10rem 3rem">
+                <Grid
+                  templateColumns="1fr"
+                  templateRows="10rem 3rem"
+                  maxWidth="80%"
+                >
                   <TextAreaField
-                    columnSpan={2}
-                    descriptiveText="Tell us about your interests, and we'll send you a custom welcome email!"
-                    resize="vertical"
+                    placeholder="Enter your interests here, and we will send you a custom welcome email!"
+                    rows={4}
                     id="textAreaField"
                     name="textAreaField"
                     isRequired={true}
@@ -155,7 +147,7 @@ export default function App() {
                     }}
                     value={textAreaValue}
                   />
-                  <Flex marginTop={4}>
+                  <Flex>
                     <Button
                       variation="primary"
                       onClick={() => {
@@ -172,11 +164,19 @@ export default function App() {
               </>
             ) : (
               // SNS email subscription is unconfirmed
-              <Alert variation="error" isDismissible={false} hasIcon={true}>
-                To proceed, check your email inbox and choose{" "}
-                <strong>Confirm subscription</strong> in the email from Amazon
-                SNS.
-              </Alert>
+              <>
+                <Alert variation="error" isDismissible={false} hasIcon={true}>
+                  To proceed, check your email inbox and choose{" "}
+                  <strong>Confirm subscription</strong> in the email from Amazon
+                  SNS.
+                </Alert>
+                <Button
+                  onClick={() => signOutCurrentUser()}
+                  marginTop={tokens.space.large}
+                >
+                  Sign out
+                </Button>
+              </>
             )}
           </main>
         )}
