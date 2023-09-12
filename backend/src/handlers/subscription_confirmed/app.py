@@ -77,14 +77,16 @@ def subscription_confirmed() -> Dict:
     subscriptions = sns_client.list_subscriptions_by_topic(TopicArn=topic_arn)
     is_subscription_confirmed = False
     for subscription in subscriptions["Subscriptions"]:
-        # TODO ensure we're looking at the right email address
-        logger.info("Subscription ARN: " + subscription["SubscriptionArn"])
+        logger.info("Subscription: " + str(subscription))
+        if subscription["Endpoint"] != email:
+            continue
         if subscription["SubscriptionArn"] == "PendingConfirmation":
             return {"subscription_confirmed": False}
         subscription_attributes = get_subscription_attributes(
             subscription["SubscriptionArn"]
         )
         logger.info("Subscription attributes: " + str(subscription_attributes))
+        # Do we have the correct email and is the subscription confirmed?
         if (
             subscription_attributes["Endpoint"] == email
             and subscription_attributes["PendingConfirmation"] == "false"
