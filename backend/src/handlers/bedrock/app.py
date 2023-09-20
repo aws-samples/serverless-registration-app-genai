@@ -49,11 +49,41 @@ def generate_email_body(first_name: str, profile_text: str) -> str:
         model_kwargs=titan_kwargs,
     )
 
-    prompt = f"""Write a welcome email from the AWS re:Invent serverless team
-        to the customer named {first_name} who registered for the Builder's
+    prompt = """Human: You are a friendly and creative engineer and writer tasked with generating interest in sessions at a tech conference. Write a welcome email from the AWS re:Invent serverless team
+        to <first_name> who registered for the Builder's
         Session SVS 209. Suggest to them three other recommended sessions, based
-        on their interests: {profile_text}. Use the data provided in the
-        following list as a source for recommended sessions: {session_data}."""
+        on their <profile_text>. Use the data provided in <session_data> to provide a recommendation of 2 to 3 additional sessions.
+        
+        Here is an example in <question> tags of an e-mail sent to a customer based on their interests:
+        <question>
+        profile_text: 'Java, serverless'
+        session_data: Navigating the journey to serverless event-driven architecture, Refactoring Java applications to serverless, From serverful to serverless Java, Solving problems with Amazon API Gateway, Building APIs: Choosing the best API solution & strategy for workloads
+        <question>
+
+        Here is an appropriate response:
+        Assistant:
+        <response>
+        Hi Bob! Thanks for registering for our Builder's Session SVS 209. We hope
+        you find it informative and engaging. You might also find the following sessions interesting:  
+
+        1. Navigating the journey to serverless event-driven architecture
+        2. Refactoring Java applications to serverless
+        3. From serverful to serverless 
+        
+        Please register soon if you'd like to attend them.
+        </response>
+        
+
+        Human: 
+        Response only with the email in <response> tags, and write creatively. 
+
+        <question>
+        <first_name>{first_name}</first_name>
+        <profile_text>{profile_text}</profile_text>
+        <session_data>{session_data}</session_data>
+        </question>
+        Assistant:
+        """
 
     logger.info(f"Prompt: {prompt}")
 
