@@ -44,16 +44,12 @@ def generate_email_body(first_name: str, profile_text: str) -> str:
     }
 
     bedrock_llm = Bedrock(
-        model_id="amazon.titan-tg1-large",
+        model_id="amazon.titan-text-express-v1",
         client=bedrock_client,
         model_kwargs=titan_kwargs,
     )
 
-    prompt = f"""Write a welcome email from the AWS re:Invent serverless team
-        to the customer named {first_name} who registered for the Builder's
-        Session SVS 209. Suggest to them three other recommended sessions, based
-        on their interests: {profile_text}. Use the data provided in the
-        following list as a source for recommended sessions: {session_data}."""
+    prompt = f"""You are a friendly and creative engineer and writer tasked with generating interest in sessions at a tech conference. Write a welcome email from the AWS re:Invent serverless team to the customer named {first_name} who registered for the Builder's Session SVS 209. Suggest to them three other recommended sessions, based on their interests: {profile_text}. Use the data provided in the following list as a source for recommended sessions: {session_data}."""
 
     logger.info(f"Prompt: {prompt}")
 

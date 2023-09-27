@@ -61,7 +61,7 @@ Resources:
         - SQSSendMessagePolicy:
             QueueName: !GetAtt RegisterQueue.QueueName
       Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
       Tags:
         LambdaPowertools: python
 
@@ -94,7 +94,7 @@ Resources:
             - sns:GetSubscriptionAttributes
             Resource: !Ref RegistrationTopic
       Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
       Tags:
         LambdaPowertools: python
 
@@ -130,7 +130,7 @@ Resources:
             - bedrock:InvokeModel
             Resource: !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-tg1-large
       Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
         - !Ref BedrockLayer # TODO Remove layer for Bedrock GA
       Tags:
         LambdaPowertools: python
@@ -157,7 +157,7 @@ Resources:
             Trigger: PostConfirmation
             UserPool: !Ref UserPool
       Layers:
-          - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:42
+          - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
       Tags:
         LambdaPowertools: python
 
@@ -182,12 +182,9 @@ Resources:
           Principal:
             Service: cloudfront.amazonaws.com
           Action: s3:GetObject
-          # Resource: !Join ['', ['arn:aws:s3:::', !Ref WebSiteBucket, /*]]
           Resource: !Sub 'arn:aws:s3:::${WebSiteBucket}/*' 
           Condition:
             StringEquals:
-              # AWS:SourceArn: !Join ['', ['arn:aws:cloudfront::', !Ref "AWS::AccountId",
-              #     ':distribution/', !Ref CloudFrontDistribution]]
               AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
 
   CloudFrontDistribution:
