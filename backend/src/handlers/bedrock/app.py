@@ -2,6 +2,7 @@
 Invokes Bedrock to generate welcome email content and send the email via SNS.
 """
 
+import json
 import os
 
 import boto3
@@ -15,7 +16,7 @@ from aws_lambda_powertools.utilities.batch import (
 )
 from aws_lambda_powertools.utilities.data_classes.sqs_event import SQSRecord
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from langchain.llms.bedrock import Bedrock
+
 
 app = APIGatewayRestResolver()
 tracer = Tracer()
@@ -36,28 +37,36 @@ def generate_email_body(first_name: str, profile_text: str) -> str:
     with open("session_data.txt", "r", encoding="utf-8") as file:
         session_data = file.read()
 
-    titan_kwargs = {
-        "maxTokenCount": 4096,
-        "stopSequences": [],
-        "temperature": 1.0,
-        "topP": 0.9,
-    }
-
-    bedrock_llm = Bedrock(
-        model_id="amazon.titan-text-express-v1",
-        client=bedrock_client,
-        model_kwargs=titan_kwargs,
-    )
-
     prompt = f"""You are a friendly and creative engineer and writer tasked with generating interest in sessions at a tech conference. Write a welcome email from the AWS re:Invent serverless team to the customer named {first_name} who registered for the Builder's Session SVS 209. Suggest to them three other recommended sessions, based on their interests: {profile_text}. Use the data provided in the following list as a source for recommended sessions: {session_data}."""
 
     logger.info(f"Prompt: {prompt}")
 
-    metrics.add_metric(name="InvokeModel", unit=MetricUnit.Count, value=1)
-    response = bedrock_llm(prompt)
+    body = json.dumps(
+        {
+            "inputText": prompt,
+            "textGenerationConfig": {
+                "maxTokenCount": 4096,
+                "stopSequences": [],
+                "temperature": 1.0,
+                "topP": 0.9,
+            },
+        }
+    )
 
-    logger.info(response)
-    return response
+    model_id = "amazon.titan-text-express-v1"
+    accept = "application/json"
+    content_type = "application/json"
+
+    metrics.add_metric(name="InvokeModel", unit=MetricUnit.Count, value=1)
+
+    response = bedrock_client.invoke_model(
+        body=body, modelId=model_id, accept=accept, contentType=content_type
+    )
+    response_body = json.loads(response.get("body").read())
+    answer = response_body.get("results")[0].get("outputText").strip()
+
+    logger.info(answer)
+    return answer
 
 
 @tracer.capture_method
