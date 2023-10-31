@@ -240,14 +240,6 @@ Resources:
           DefaultTTL: 3600
           MaxTTL: 86400
         PriceClass: PriceClass_200
-        Restrictions:
-          GeoRestriction:
-            RestrictionType: whitelist
-            Locations:
-            - US
-            - CA
-            - GB
-            - DE
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
 
