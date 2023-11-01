@@ -25,16 +25,6 @@ Globals:
 
 Resources:
 
-  # TODO Remove layer for Bedrock GA
-  # BedrockLayer:
-  #   Type: AWS::Serverless::LayerVersion
-  #   Properties:
-  #     LayerName: bedrock-layer
-  #     Description: Bedrock Lambda Layer
-  #     ContentUri: s3://boto3-layers/boto3-for-bedrock-47597af9-9989-49b2-9576-7d452e1442cd.zip
-  #     CompatibleRuntimes:
-  #       - python3.11
-
   RegisterFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -52,6 +42,7 @@ Resources:
           POWERTOOLS_SERVICE_NAME: RegistrationService
           POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
           POWERTOOLS_DEV: false # set to false in production
+          POWERTOOLS_LOGGER_LOG_EVENT: true
           LOG_LEVEL: INFO
           TABLE_NAME: !Ref RegistrationTable
           QUEUE_URL: !Ref RegisterQueue
@@ -61,7 +52,7 @@ Resources:
         - SQSSendMessagePolicy:
             QueueName: !GetAtt RegisterQueue.QueueName
       Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:46
       Tags:
         LambdaPowertools: python
 
@@ -82,6 +73,7 @@ Resources:
           POWERTOOLS_SERVICE_NAME: RegistrationService
           POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
           POWERTOOLS_DEV: false # set to false in production
+          POWERTOOLS_LOGGER_LOG_EVENT: true
           LOG_LEVEL: INFO
           TOPIC_ARN: !Ref RegistrationTopic
       Policies:
@@ -94,7 +86,7 @@ Resources:
             - sns:GetSubscriptionAttributes
             Resource: !Ref RegistrationTopic
       Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:46
       Tags:
         LambdaPowertools: python
 
@@ -115,6 +107,7 @@ Resources:
           POWERTOOLS_SERVICE_NAME: RegistrationService
           POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
           POWERTOOLS_DEV: false # set to false in production
+          POWERTOOLS_LOGGER_LOG_EVENT: true
           LOG_LEVEL: INFO
           TABLE_NAME: !Ref RegistrationTable
           TOPIC_ARN: !Ref RegistrationTopic
@@ -130,8 +123,7 @@ Resources:
             - bedrock:InvokeModel
             Resource: !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-text-express-v1
       Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
-        # - !Ref BedrockLayer # TODO Remove layer for Bedrock GA
+        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:46
       Tags:
         LambdaPowertools: python
 
@@ -145,6 +137,7 @@ Resources:
           POWERTOOLS_SERVICE_NAME: RegistrationService
           POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
           POWERTOOLS_DEV: false # set to false in production
+          POWERTOOLS_LOGGER_LOG_EVENT: true
           LOG_LEVEL: INFO
           TOPIC_ARN: !Ref RegistrationTopic
       Policies:
@@ -157,7 +150,7 @@ Resources:
             Trigger: PostConfirmation
             UserPool: !Ref UserPool
       Layers:
-          - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:45
+          - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:46
       Tags:
         LambdaPowertools: python
 

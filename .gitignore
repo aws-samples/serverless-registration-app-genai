@@ -411,3 +411,4 @@ $RECYCLE.BIN/
 # deploy_frontend.sh will create this file from amplify.js.orig
 frontend/src/amplify.js
 frontend/src/amplify.js""
+.$diagram.drawio.bkp

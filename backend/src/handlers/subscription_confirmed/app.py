@@ -3,7 +3,7 @@ SNS subscription confirmation
 """
 
 import os
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
@@ -95,11 +95,9 @@ def subscription_confirmed() -> Dict:
     return {"subscription_confirmed": is_subscription_confirmed}
 
 
-@logger.inject_lambda_context(
-    correlation_id_path=correlation_paths.API_GATEWAY_REST, log_event=True
-)
+@logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
 @tracer.capture_lambda_handler
 @metrics.log_metrics(capture_cold_start_metric=True)
-def lambda_handler(event: dict, context: LambdaContext) -> dict:
+def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
     """Lambda entry point"""
     return app.resolve(event, context)
