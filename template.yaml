@@ -25,36 +25,7 @@ Globals:
 
 Resources:
 
-  RegisterFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: app.lambda_handler
-      CodeUri: backend/src/handlers/register
-      Description: Register function
-      Events:
-        RegisterPath:
-          Type: Api
-          Properties:
-            Path: /register
-            Method: POST
-      Environment:
-        Variables:
-          POWERTOOLS_SERVICE_NAME: RegistrationService
-          POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
-          POWERTOOLS_DEV: false # set to false in production
-          POWERTOOLS_LOGGER_LOG_EVENT: true
-          LOG_LEVEL: INFO
-          TABLE_NAME: !Ref RegistrationTable
-          QUEUE_URL: !Ref RegisterQueue
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref RegistrationTable
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt RegisterQueue.QueueName
-      Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:46
-      Tags:
-        LambdaPowertools: python
+
 
   SubscriptionConfirmedFunction:
     Type: AWS::Serverless::Function
@@ -90,42 +61,6 @@ Resources:
       Tags:
         LambdaPowertools: python
 
-  BedrockFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: app.lambda_handler
-      CodeUri: backend/src/handlers/bedrock
-      Description: Bedrock function
-      Events:
-        RegisterSQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt RegisterQueue.Arn
-            BatchSize: 10
-      Environment:
-        Variables:
-          POWERTOOLS_SERVICE_NAME: RegistrationService
-          POWERTOOLS_METRICS_NAMESPACE: RegistrationApp
-          POWERTOOLS_DEV: false # set to false in production
-          POWERTOOLS_LOGGER_LOG_EVENT: true
-          LOG_LEVEL: INFO
-          TABLE_NAME: !Ref RegistrationTable
-          TOPIC_ARN: !Ref RegistrationTopic
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref RegistrationTable
-        - SNSPublishMessagePolicy:
-            TopicName: !GetAtt RegistrationTopic.TopicName
-        - Statement:
-          - Sid: BedrockInvokeModelPolicy
-            Effect: Allow
-            Action:
-            - bedrock:InvokeModel
-            Resource: !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-text-express-v1
-      Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:46
-      Tags:
-        LambdaPowertools: python
 
   CognitoPostConfirmationFunction:
     Type: AWS::Serverless::Function
@@ -364,16 +299,7 @@ Resources:
         authenticated: !GetAtt 'CognitoAuthorizedRole.Arn'
         unauthenticated: !GetAtt 'CognitoUnAuthorizedRole.Arn'
 
-  RegistrationTable:
-    Type: AWS::Serverless::SimpleTable
-    Properties:
-      TableName: !Sub 'Registration-${AWS::StackName}'
-      PrimaryKey:
-        Name: email
-        Type: String
-      ProvisionedThroughput:
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
+
 
   RegistrationTopic:
     Type: AWS::SNS::Topic
