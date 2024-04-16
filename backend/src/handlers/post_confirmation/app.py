@@ -33,7 +33,7 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
         PostConfirmationTriggerEvent(event)
     )
     user_attributes = post_confirmation_trigger_event.request.user_attributes
-    email = user_attributes["cognito:email_alias"]
+    email = user_attributes["email"]
     logger.info(f"email: {email}")
 
     # create SNS subscription
