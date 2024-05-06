@@ -23,11 +23,11 @@ const components = {
 
     return (
       <View textAlign="center" marginTop={tokens.space.large}>
-        <Text>AWS re:Invent 2023</Text>
-        <Text>SVS 209 — Using generative AI to build a serverless registration app</Text>
-        <Image height="50%" width="50%"
+        <Text>AWS Summit Washington, DC 2024</Text>
+        <Text>SVS 201 — Serverless registration application with GenAI</Text>
+        <Image height="20%" width="20%"
           alt="AWS logo"
-          src="https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png"
+          src="https://raw.githubusercontent.com/aws-samples/serverless-registration-app-genai/main/frontend/public/AWS_logo_RGB.svg"
         />
       </View>
     );
