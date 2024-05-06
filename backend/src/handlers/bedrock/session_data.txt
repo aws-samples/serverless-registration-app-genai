@@ -1,59 +1,197 @@
-API302 | Building next-generation applications with event-driven architecture
-API401 | Advanced workflow patterns and  business processes
-API303 | Navigating the journey to serverless event-driven architecture
-API309 | Advanced integration patterns and trade-offs for loosely coupled apps
-API310 | Scale interactive data analysis with Step Functions Distributed Map
-API206 | Bringing workloads together with event-driven architecture
-API304 | Building better with Apache Kafka and Amazon EventBridge
-API307 | Comparing Amazon MWAA and AWS Step Functions
-API203 | Thinking asynchronously: Integration patterns for microservices
-API308 | Accelerating event-driven architecture with domain-driven design
-API305 | Building resilience in decoupled applications with dead-letter queues
-API306 | Combining Step Functions and EventBridge: Use cases and best practices
-API207 | Messaging at scale: How to decide which service to use
-API201 | Serverlesspresso: Building event-driven applications from the start
-API202 | The AWS Step Functions workshop
-API301 | Building event-driven architectures
-API205 | Decoupling your data-driven applications with Amazon EventBridge Pipes
-API204 | Build a serverless ordering system with toy bricks
-SVS401 | Best practices for serverless developers
-SVS301 | Building APIs: Choosing the best API solution & strategy for workloads
-SVS305 | Refactoring to serverless
-SVS307 | Scaling your serverless data processing with Amazon Kinesis and Kafka
-SVS308 | Building low-latency, event-driven applications
-SVS204 | Building Serverlesspresso: Creating event-driven architectures
-SVS309 | Improve productivity by shifting more responsibility to developers
-SVS205 | Getting started building serverless event-driven applications
-SVS203 | Thinking serverless
-SVS310 | Automated testing for serverless and event-driven architectures
-SVS313 | Harnessing observability to optimize your serverless workloads
-SVS402 | Refactoring Java applications to serverless
-SVS311 | Optimizing cost and performance for AWS Lambda-based workloads
-SVS312 | Building serverless applications with Terraform
-SVS314 | Is your serverless application production-ready?
-SVS317 | Building modern API architectures on AWS: Which front door to use
-SVS315 | Automating resilience with regional awareness for your applications
-SVS318 | Unlocking more efficient data processing with serverless
-SVS316 | Building generative AI applications with serverless and Amazon Bedrock
-SVS320 | Building multi-tenant applications with AWS Lambda and AWS Fargate
-SVS202 | Getting started with serverless patterns
-SVS201 | Building a serverless web application for a theme park
-SVS303 | Building secure serverless applications workshop
-SVS306 | Serverless observability workshop
-SVS302 | Building distributed data processing workloads with AWS Step Functions
-SVS304 | From serverful to serverless Java
-SVS209 | Using generative AI to build a serverless registration app
-SVS208 | Learn testing patterns for serverless, event-driven applications
-SVS207 | Creating your first API from scratch with OpenAPI and AWS SAM
-SVS321 | Designing your serverless API workloads for massive scale
-SVS319 | AWS Lambda performance tuning: Best practices and guidance
-SVS206 | Building your first serverless application with AWS SAM
-SVS210 | Just run code: Build serverless applications quickly with AWS SAM
-SVS322 | Demystifying idempotency with Powertools for AWS Lambda
-SVS323 | Solving problems with Amazon API Gateway
-SVS211 | Build a chatbot using Amazon Bedrock, Amazon Kendra and serverless
-API311 | Combine messaging services for resilience and ordering in high-scale workloads
-API312 | Prepare petabytes of data for your ML workloads with Step Functions
-API208 | Schedule work with EventBridge Scheduler
-SVS212 | Using AWS Lambda to process Amazon SQS and Amazon SNS messages
-SVS213 | Visualize and design your architecture with AWS Application Composer
+AES201 | ICEYE uses AWS to monitor natural disasters from space
+AES202 | In-Flight Connectivity Insights with Amazon SageMaker & QuickSight
+AES301 | Using AWS to simulate and manage Rivada’s satellite constellation
+AES302 | Rocket Science: Ingest, process, analyze time series test data on AWS
+AES303 | Using Generative AI and Natural Language Prompts to Query APIs
+AES304 | Use RAG to improve responses in generative AI applications
+AIM103 | Building an Intelligent Document Processing Hub at scale at Fannie Mae
+AIM208 | Amazon Q: Your new assistant and expert guide for building with AWS
+AIM209 | Build your first generative AI application with Amazon Bedrock
+AIM210-R | Deploying a secure knowledge base with RAG and LLMs in US GovCloud [REPEAT]
+AIM302 | Securely build generative AI apps and control data with Amazon Bedrock
+AIM303 | Intelligent document processing with generative AI for public sector
+AIM304 | Customizing gen AI applications for your business using your own data
+AIM305 | Create your first Amazon Bedrock generative AI application
+AIM306 | Build a chat assistant with Amazon Bedrock
+AIM307 | Accelerate data science coding with Amazon CodeWhisperer
+AIM308-R | Build a generative AI assistant to quickly derive insights and value [REPEAT]
+AIM401-R | Building protein language models for life science generative AI [REPEAT]
+ANT201 | Improve your search with vector capabilities in OpenSearch Service
+ANT302 | Smarter, faster analytics with generative AI & ML
+ANT303 | Using natural language to author data integration applications
+ANT304-R | Unleashing the Power of Gen AI and BI with Amazon Q and Quicksight [REPEAT]
+ANT305 | Unlock Data-Driven Value with AWS Analytics and GenAI Capabilities
+ANT306-R | Using Amazon OpenSearch Service as a vector DB for Gen AI apps [REPEAT]
+ANT307 | Build an end-to-end data strategy for analytics and generative AI
+ARC201 | Monitoring resilient architectures with AWS Resilience Hub
+MKT201 | How governments access third-party products in Amazon Dedicated Clouds
+MKT300 | Deploying generative AI solutions in classified government clouds
+PTN101 | Better Together: AWS Partners and AWS Distribution Partners
+PTN102 | Marketing success: Generate demand with AWS Scalable Programs 
+PTN103 | The Better Together Migration Story
+PTN104 | Shape for Success: Learn Capture Best Practices and Maximize Win Rate
+PTN105 | Party Rock: Build Quick Apps for AI-Driven Cloud Migrations
+PTN106 | Build, Market and Sell with AWS: Partner Funding 101
+PTN201 | Accelerate Government Procurement Through AWS Marketplace
+PTN202 | AWS Partners for Zero Trust Architectures
+PTN203 | Drive Transformation with AI & ML skills
+PTN301 | Develop secure applications: Amazon Q developer & Amazon CodeWhisperer
+BIZ102 | How South Carolina used their contact center to improve services
+BIZ301 | The opportunities and challenges of generative AI in contact centers
+BIZ302 | Automate agent evaluations with Amazon Connect and generative AI
+BIZ303 | Streamline customer interactions with Amazon Connect and IDP
+BSI100 | Boost productivity with Generative BI in Amazon QuickSight
+BSI200 | Add Generative BI capabilities to web apps by embedding Amazon Q in QuickSight
+COP201 | Ways to avoid cost surprises
+COP301 | Using generative AI to improve your compliance and auditing processes
+COP302 | Architecting AWS Accounts for scale
+COP303 | Monitor end user experience with Amazon CloudWatch
+CMP201 | Accelerate generative AI deployment with Amazon SageMaker JumpStar
+CMP202 | New Amazon EC2 generative AI capabilities in AWS Management Console
+CMP301 | Deploy LLMs on AWS Inferentia with Amazon SageMaker and Amazon EKS
+CMP302 | Build a cost-effective conversational agent with Llama 2
+CMP303 | Deploy LLMs with AWS Inferentia & Ray to optimize performance and cost
+CMP304 | Fine-tune Hugging Face LLMs using Amazon SageMaker and AWS Trainium
+CMP305 | PyTorch best practices for generative AI & LLM inference architectures
+CMP401 | Build a generative AI chatbot using your own data with Amazon Titan
+DAT201 | What's new with Amazon RDS?
+DAT301 | Get started with Amazon Neptune, LLMs, and LangChain
+DAT302 | Build generative-AI-powered search with Amazon Aurora & Amazon RDS
+DAT303 | Deep dive into the latest Amazon RDS for Oracle innovations
+DAT401 | Best practices for querying vector data for gen AI apps in PostgreSQL
+DAT402 | Using LangChain to build gen AI apps with Amazon Aurora and pgvector
+DPR201 | AWS DeepRacer: Get hands-on with AI
+DEV101 | Glitch in the matrix: AI and DevSecOps
+DEV102 | Gaming Your Way to AWS Certifications
+DEV103 | Embracing Evolution: Behavioral Insights for Python AWS Upgrades
+DEV104 | The Ethical A.I. Dilemma
+DEV201 | Glue in Your Coffee? Normalizing Data with Glue Data Brew
+DEV202 | Comprehending Jira Tickets using Amazon Bedrock
+DEV203 | Your AWS Account is Talking. It's Time to Listen
+DEV204 | Security Best Practices of GenAI Applications backed by Amazon Bedrock
+DEV205 | It's Not the Network... Until It Is: Mastering native tools
+DEV206 | Create DEV, QA, and UAT environments using unique domain names
+DOP201 | The future of development on AWS
+DOP202 | Tips and tricks for coding with Amazon CodeWhisperer
+DOP203 | New AWS generative AI features and tools for developers
+DOP301 | Hands-on with Amazon CodeWhisperer
+DOP303 | AI for DevOps: Modernizing your DevOps operations with AWS
+DOP304 | Code faster with Amazon CodeWhisperer
+DOP305-R | Accelerate data science coding with Amazon CodeWhisperer [REPEAT]
+EDU201 | Augmenting  efficiency at scale in higher education
+EDU202 | Advancing research in the cloud
+EDU203 | Accelerating data modernization to achieve mission outcomes
+EDU204 | Building a modernized ERP environment for students, faculty, and staff
+EDU205 | Driving student success with AI/ML
+EDU206 | Building Falcon LLM: A top-ranked open source language model
+EDU301 | New ways of educating with generative AI
+EUC201 | Secure generative AI and ML development with Amazon WorkSpaces
+EUC202 | Improve IT agility with VMware Horizon 8 on Amazon WorkSpaces Core.
+ENT201 | Securing Windows Workloads on AWS
+ENT202 | Transform Oracle ERP with AWS analytics, AI/ML & generative BI tools
+GOV101 | Using Emerging Technology to Push Federal Missions Forward
+GOV102 | Harmonizing Federal Cloud: Procuring Services in a Digital Symphony
+GOV103 | Protecting Federal and Critical Infrastructure Networks on AWS
+GOV201 | A new era: The path to generative AI in public sector
+GVC101 | Customer perspectives on how AWS GovCloud (US) enables innovation
+GVC201-R | Explore AI solutions with Amazon SageMaker in AWS GovCloud (US) [REPEAT]
+GVC201-R1 | Explore AI solutions with Amazon SageMaker in AWS GovCloud (US) [REPEAT]
+GVC202 | Deploy compute anywhere with AWS GovCloud (US) edge solutions
+GVC203 | Architect to maximize uptime and resiliency in AWS GovCloud (US)
+GVC204 | Get started with Gen AI in AWS GovCloud (US) using Amazon Bedrock
+HLC101 | Generative AI panel: Moving beyond the hype and realizing value
+HLC102 | Improving patient outcomes using generative AI in healthcare
+HLC103 | Enabling AI in Digital Pathology: Power of the AWS Cloud
+HLC104 | Driving health breakthroughs with integrated data strategies & gen AI
+HLC105 | Unleashing Healthcare Innovation by migrating your EHR to AWS
+HLC106 | Medical Imaging on AWS - Considerations for healthcare providers
+HLC107 | Using Generative AI to improve diagnostic yield in genomic medicine
+HYB201 | AWS Modular Data Center and Hybrid Cloud Services at the Edge
+HYB202 | Hands on with AWS Outposts
+HYB203 | Outposts Resiliency
+HYB204 | US Air Force Outposts Athena Program Breakout Session
+HYB301-R | Generative AI for robotics: Race for the best drone control assistant [REPEAT]
+IOT301 | Designing an AWS IoT Greengrass component with generative AI
+IOT302-R | Advanced Metering Infrastructure 2.0 at scale using AWS IoT Greengrass [REPEAT]
+KUB201 | Harness the power of Karpenter to scale, optimize & upgrade Kubernetes
+KUB301 | Amazon EKS: Infrastructure as code, GitOps, or CI\CD?
+KUB302 | Navigating the future of AI: Deploying generative models on Amazon EKS
+KUB401-R | Generative AI with Data on Amazon EKS (DoEKS) [REPEAT]
+MIG201 | Streamline Windows cloud migrations with Generative AI
+MIG202 | How to rapidly modernize on AWS
+NET201 | Get hands-on with IPv6
+NET202 | How to build your AWS Network for Generative AI workloads
+NET203 | Secure your applications without a VPN using AWS Verified Access
+NET301 | Connecting and securing services with Amazon VPC Lattice
+NET302 | Networking essentials across AWS Partitions
+NPR100 | Implementing generative AI responsibly: A talk with TrueMedia.org
+NPR201 | Amplifying nonprofit donor and member experience with generative AI
+NPR202 | Increasing mission impact with generative AI
+NPR203 | Techniques to build secure applications to impact nonprofit missions
+NPR204 | Leverage GenAI & AWS Marketplace to accelerate policymaking
+NPR205 | Gain real-time insight & amplify impact with analytics & AI/ML
+OPS201 | The Best of Both Worlds: A framework for petabyte scale data pipelines
+OPS401-R | Open source LLM optimization with Amazon SageMaker [REPEAT]
+CMP101 | Harness the power of AWS to build game-changing applications
+AIM217 | Build a data foundation to fuel generative AI
+DOP306 | Supercharge your development with AWS generative AI developer tools
+AIM104-R | Reinventing with generative AI on AWS [REPEAT]
+SEC202 | Secure Containers from Supply Chain Attacks
+SEC203 | Prevent, detect & automatically remediate vulnerabilities in code
+SEC204 | Running the Iowa Caucus on AWS for under $100
+SEC205 |  Threat modeling your generative AI workload to evaluate security risk
+SEC206 | Secure Software Factories through the US Public Sector Policy Lens
+SEC207 | Unified identity management and integrating Login.gov with Amazon Cognito
+SEC208 | How security teams can strengthen security using generative AI
+SEC300 | Generating dynamic security automation workflows leveraging Amazon Bedrock
+SEC405 | Create a generative AI runbook to resolve security findings
+SVS201-R | Using Generative AI to Build a Serverless Registration App [REPEAT]
+SVS301 | Build a CI/CD pipeline for serverless applications
+SVS302 | Building generative AI applications with serverless and Amazon Bedrock
+SCI201 | Innovating for health equity to drive social impact with generative AI
+SCI202 | Streamline grant proposal reviews with Generative AI
+SLG101 | Modern Data Approaches Transforming Constituent Outcomes
+SLG102 | Going on the transformation journey
+SLG103 | Modernizing Tax Systems with Cloud Solutions
+SLG104 | Assessing and accelerating cyber security posture
+SLG105 | Citizen Obsessed Service Delivery with the Cloud
+SLG201 | Improving customer experience for public sector
+SLG301 | Intelligent document processing at scale with generative AI
+STG201 | Accelerate generative AI and ML workloads with AWS storage
+STG302 | Accelerate ML and HPC with high performance file storage
+STG303 | Enable Enterprise Applications with Advanced Block Storage
+STG304 | Accelerate performance-critical apps with Amazon S3 Express One Zone
+STG401 | Boost performance and run compute-intensive workloads at scale
+TNC100 | How to Build an Internal Pipeline of Cloud Talent
+TNC101-R | Why do you need Cloud Skills?  [REPEAT]
+TNC102 | AI and ML: Now is the time to invest in skilling your workforce
+TNC103 | AWS Cloud Quest: Ignite growth with hands-on skill building
+TNC104 | Empowering the next generation of cloud innovators with AWS Educate
+TNC105 | Forging a future-ready workforce with AWS Certification
+TNC106 | Recertify as AWS Certified Cloud Practitioner with game-based learning
+TNC107 |  Spotlight labs | Spotlight lab: Introduction to Amazon EC2
+TNC108 |  Spotlight labs | Spotlight lab: Introduction to Amazon S3
+TNC109 |  Spotlight labs | Spotlight lab: Working with Amazon RDS databases
+TNC110 | Introduction to prompt engineering
+TNC201 |  Spotlight labs | Moving to Amazon API Gateway
+TNC202 |  Spotlight labs | Spotlight lab: Amazon VPC Networking Basics
+TNC203 | Amazon Bedrock
+TNC204 | Amazon Q Developer
+TNC205 | Generative AI for decision-makers
+TNC001-R | Self-paced labs: Come and go as you please [REPEAT]
+TNC002-R | Self-paced labs: Come and go as you please [REPEAT]
+AIM102 | Accelerating Asylum Case Working using GenAI
+AIM211 | Build semantic search and summarization of documents in GovCloud
+AIM212 | Enabling ESG reporting with AWS Sustainability Data Fabric and GenAI
+AIM213 | Generative AI for Regulated Government Workloads
+AIM214 | Optimizing generative AI workloads for sustainability
+AIM215 | Real-time analytics with Amazon Redshift Serverless and Amazon Q
+AIM216 | SafeStep - enhancing care and emergency response
+AIM309 | Agentic Image Intelligence with GenAI
+AIM310 | Improve generative AI applications with human-in-the-loop capabilities
+AIM311 | Supercharge ML Inference: SageMaker's BYOC in a Nutshell
+ANT202 | Understand your data with business context
+ARC202 | Build sustainable architecture using AWS tools
+IOT201 | Jumpstart Your Digital Transformation Journey with AWS IoT
+MIG301 | 10 ways to modernize, optimize & monetize on AWS as business grows
+WDV101 | Building an AI Skilled Workforce
